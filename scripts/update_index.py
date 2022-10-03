@@ -1,6 +1,8 @@
 from pathlib import Path
+url = 'https://valrcs.github.io/latvian_poetry_visualizations'
 src = Path('docs/plots')
 dst = Path('docs/index.html')
+readme_path = Path('README.md')
 # list of .html files in docs/plots
 files = [f for f in src.glob('*.html') if f.is_file()]
 print("Adding links to ", files, sep='\n')
@@ -24,4 +26,17 @@ for f in files:
 new_lines = lines[:start+1] + list_items + lines[stop:]
 # print(new_lines)
 with open(dst, 'w', encoding="utf-8") as f:
+    f.writelines(new_lines)
+
+# read README.md
+with open(readme_path, 'r', encoding="utf-8") as f:
+    lines = f.readlines()
+start_links_index = [i for i, s in enumerate(lines) if '## Links' in s][0]
+markdown_links = ['\n']
+for f in files:
+    markdown_links.append(f'* [{f.stem.replace("_", " ").capitalize()}]({url}/{f.parent.name}/{f.name})\n')
+
+new_lines = lines[:start_links_index+1] + markdown_links
+# save README.md
+with open(readme_path, 'w', encoding="utf-8") as f:
     f.writelines(new_lines)
